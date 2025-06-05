@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  movil-backend:
+    build: .
+    ports:
+      - "8001:8000"  # host:contenedor
+    volumes:
+      - .:/var/www
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:XNpGcHit0eZ2JsvbYE/XazbzyFqj49tQuIKBOuAWS8s=  # cambia esto por tu APP_KEY real
+      - DB_CONNECTION=mongodb
+      - DB_URI=mongodb+srv://grupo01:d5QGObx1tXkW07u3@sw2p2backend.hahdn3u.mongodb.net/med_db?retryWrites=true&w=majority&appName=sw2p2backend
+    networks:
+      - movil_net
+
+networks:
+  movil_net:
