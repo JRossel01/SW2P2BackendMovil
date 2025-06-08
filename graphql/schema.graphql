@@ -1,0 +1,24 @@
+type LoginResponse {
+    jwt: String!
+    role: String!
+    doctorId: Int
+    patientId: Int
+}
+
+type Mutation {
+    login(identifier: String!, password: String!): LoginResponse
+}
+
+type Appointment {
+    id: Int!
+    date: String!
+    time: String!
+    status: String!
+    reason: String!
+    patientId: Int!
+    doctorId: Int!
+}
+
+type Query {
+    getAppointmentsByPatient(patientId: Int!): [Appointment]
+}

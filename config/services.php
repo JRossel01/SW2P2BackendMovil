@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'spring' => [
+        'graphql_url' => env('SPRING_GRAPHQL_URL'),
+    ],
+
 ];
