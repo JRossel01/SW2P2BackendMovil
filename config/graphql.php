@@ -78,11 +78,17 @@ return [
                 // ExampleQuery::class,
                 'getAppointmentsByPatient' => App\GraphQL\Queries\AppointmentsQuery::class,
                 'getDoctorWithUserById' => App\GraphQL\Queries\DoctorQuery::class,
+                'getAllDoctorsWithSchedules' => App\GraphQL\Queries\GetAllDoctorsWithSchedulesQuery::class,
+                'getAllAppointments' => App\GraphQL\Queries\GetAllAppointmentsQuery::class,
+                'getMedicalRecordByPatient' => App\GraphQL\Queries\GetMedicalRecordByPatientQuery::class,
+                'findConsultsByPatient' => App\GraphQL\Queries\FindConsultsByPatientQuery::class,
             ],
             'mutation' => [
                 // ExampleMutation::class,
                 'login' => App\GraphQL\Mutations\LoginMutation::class,
                 'logout' => App\GraphQL\Mutations\LogoutMutation::class,
+                'registerAppointment' => \App\GraphQL\Mutations\RegisterAppointmentMutation::class,
+                'registerPreEvaluation' => App\GraphQL\Mutations\RegisterPreEvaluationMutation::class,
             ],
             // The types only available in this schema
             'types' => [
@@ -91,6 +97,11 @@ return [
                 'LogoutResponse' => App\GraphQL\Types\LogoutResponseType::class,
                 'Appointment' => App\GraphQL\Types\AppointmentType::class,
                 'Doctor' => App\GraphQL\Types\DoctorType::class,
+                'SaveAppointmentInput' => App\GraphQL\Inputs\SaveAppointmentInput::class,
+                'PreEvaluation' => App\GraphQL\Types\PreEvaluationType::class,
+                'SavePreEvaluationInput' => App\GraphQL\Inputs\SavePreEvaluationInput::class,
+                'MedicalRecord' => App\GraphQL\Types\MedicalRecordType::class,
+                'Consult' => App\GraphQL\Types\ConsultType::class,                
             ],
 
             // Laravel HTTP middleware

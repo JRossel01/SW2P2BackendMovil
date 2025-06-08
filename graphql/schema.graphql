@@ -22,3 +22,25 @@ type Appointment {
 type Query {
     getAppointmentsByPatient(patientId: Int!): [Appointment]
 }
+
+type Mutation {
+  registerAppointment(appointmentInput: SaveAppointmentInput!): Appointment
+}
+
+input SaveAppointmentInput {
+  doctorId: Int!
+  patientId: Int!
+  reason: String!
+  date: String!
+  time: String!
+}
+
+type Appointment {
+  id: Int
+  date: String
+  time: String
+  status: String
+  reason: String
+  patientId: Int
+  doctorId: Int
+}
