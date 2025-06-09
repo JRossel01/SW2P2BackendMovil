@@ -89,6 +89,7 @@ return [
                 'logout' => App\GraphQL\Mutations\LogoutMutation::class,
                 'registerAppointment' => \App\GraphQL\Mutations\RegisterAppointmentMutation::class,
                 'registerPreEvaluation' => App\GraphQL\Mutations\RegisterPreEvaluationMutation::class,
+                'askAssistant' => App\GraphQL\Mutations\AskAssistantMutation::class,
             ],
             // The types only available in this schema
             'types' => [
@@ -101,7 +102,8 @@ return [
                 'PreEvaluation' => App\GraphQL\Types\PreEvaluationType::class,
                 'SavePreEvaluationInput' => App\GraphQL\Inputs\SavePreEvaluationInput::class,
                 'MedicalRecord' => App\GraphQL\Types\MedicalRecordType::class,
-                'Consult' => App\GraphQL\Types\ConsultType::class,                
+                'Consult' => App\GraphQL\Types\ConsultType::class,    
+                'AssistantResponse' => App\GraphQL\Types\AssistantResponseType::class,            
             ],
 
             // Laravel HTTP middleware

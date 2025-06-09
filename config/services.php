@@ -39,4 +39,8 @@ return [
         'graphql_url' => env('SPRING_GRAPHQL_URL'),
     ],
 
+    'openai' => [
+        'token' => env('OPENAI_TOKEN'),
+    ],
+
 ];
