@@ -89,7 +89,8 @@ return [
                 'logout' => App\GraphQL\Mutations\LogoutMutation::class,
                 'registerAppointment' => \App\GraphQL\Mutations\RegisterAppointmentMutation::class,
                 'registerPreEvaluation' => App\GraphQL\Mutations\RegisterPreEvaluationMutation::class,
-                'askAssistant' => App\GraphQL\Mutations\AskAssistantMutation::class,
+                'askAssistant' => App\GraphQL\Mutations\AskAssistantMutation::class,                
+                'generateMedicalRecordPdf' => \App\GraphQL\Mutations\GenerateMedicalRecordPdfMutation::class,
             ],
             // The types only available in this schema
             'types' => [

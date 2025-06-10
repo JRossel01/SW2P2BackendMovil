@@ -44,3 +44,7 @@ type Appointment {
   patientId: Int
   doctorId: Int
 }
+
+type Mutation {
+    generateMedicalRecordPdf(patientId: Int!): String!
+}
