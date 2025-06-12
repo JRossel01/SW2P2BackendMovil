@@ -20,7 +20,22 @@ class GenerateMedicalRecordPdfService
         $record = $this->obtenerHistorial($patientId, $jwt);
 
         $fechaHoraActual = Carbon::now()->format('Y-m-d H:i:s');
-        $pdfPath = $this->generarPdf($record, $consults, $user, $fechaHoraActual);
+
+
+        $pdfData = $this->generarPdf($record, $consults, $user, $fechaHoraActual);
+        $pdfPath = $pdfData['path'];
+        $hash = $pdfData['hash'];
+
+        // Registrar hash en blockchain usando script externo
+        $command = "node " . base_path('scripts/registerPdfHash.cjs') . " {$patientId} {$hash}";
+        exec($command, $output, $status);
+
+        if ($status !== 0) {
+            \Log::error("Error al registrar hash en blockchain: " . implode("\n", $output));
+        } else {
+            \Log::info("Hash registrado en blockchain correctamente para paciente {$patientId}: {$hash}");
+        }
+
 
         $this->enviarCorreoConPdf($user->email, $user->name, $pdfPath);
 
@@ -109,7 +124,7 @@ class GenerateMedicalRecordPdfService
         return $response->json('data.getMedicalRecordByPatient') ?? [];
     }
 
-    private function generarPdf(array $record, $consults, object $user, string $fecha): string
+    private function generarPdf(array $record, $consults, object $user, string $fecha): array
     {
         $pdf = Pdf::loadView('pdf.medical_record', [
             'record' => $record,
@@ -124,8 +139,12 @@ class GenerateMedicalRecordPdfService
 
         Storage::disk('public')->put($path, $pdf->output());
 
-        return $path;
+        $pdfContent = Storage::disk('public')->get($path);
+        $hash = hash('sha256', $pdfContent);
+
+        return ['path' => $path, 'hash' => $hash];
     }
+
 
     private function enviarCorreoConPdf(string $email, string $nombre, string $pdfPath): void
     {

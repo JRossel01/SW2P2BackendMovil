@@ -91,6 +91,7 @@ return [
                 'registerPreEvaluation' => App\GraphQL\Mutations\RegisterPreEvaluationMutation::class,
                 'askAssistant' => App\GraphQL\Mutations\AskAssistantMutation::class,                
                 'generateMedicalRecordPdf' => \App\GraphQL\Mutations\GenerateMedicalRecordPdfMutation::class,
+                'verifyPdfHash' => \App\GraphQL\Mutations\VerifyPdfHashMutation::class,
             ],
             // The types only available in this schema
             'types' => [
@@ -104,7 +105,8 @@ return [
                 'SavePreEvaluationInput' => App\GraphQL\Inputs\SavePreEvaluationInput::class,
                 'MedicalRecord' => App\GraphQL\Types\MedicalRecordType::class,
                 'Consult' => App\GraphQL\Types\ConsultType::class,    
-                'AssistantResponse' => App\GraphQL\Types\AssistantResponseType::class,            
+                'AssistantResponse' => App\GraphQL\Types\AssistantResponseType::class,   
+                'PdfVerificationResult' => \App\GraphQL\Types\PdfVerificationResultType::class,         
             ],
 
             // Laravel HTTP middleware

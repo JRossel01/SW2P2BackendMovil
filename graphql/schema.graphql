@@ -48,3 +48,13 @@ type Appointment {
 type Mutation {
     generateMedicalRecordPdf(patientId: Int!): String!
 }
+
+type Mutation {
+    verifyPdfHash(pdfUrl: String!): PdfVerificationResult!
+}
+
+type PdfVerificationResult {
+    pdfHash: String!
+    registradoEnBlockchain: Boolean!
+    transaccion: String
+}
