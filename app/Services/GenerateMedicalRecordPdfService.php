@@ -26,6 +26,9 @@ class GenerateMedicalRecordPdfService
         $pdfPath = $pdfData['path'];
         $hash = $pdfData['hash'];
 
+        \Log::info("📝 Hash generado para el paciente {$patientId}: {$hash}");
+
+
         // Registrar hash en blockchain usando script externo
         $command = "node " . base_path('scripts/registerPdfHash.cjs') . " {$patientId} {$hash}";
         exec($command, $output, $status);
@@ -141,6 +144,9 @@ class GenerateMedicalRecordPdfService
 
         $pdfContent = Storage::disk('public')->get($path);
         $hash = hash('sha256', $pdfContent);
+
+        
+
 
         return ['path' => $path, 'hash' => $hash];
     }

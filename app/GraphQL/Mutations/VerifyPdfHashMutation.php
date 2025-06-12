@@ -6,7 +6,8 @@ use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Mutation;
 use App\GraphQL\Types\PdfVerificationResultType;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Rebing\GraphQL\Support\Facades\GraphQL;
 
 class VerifyPdfHashMutation extends Mutation
 {
@@ -17,7 +18,7 @@ class VerifyPdfHashMutation extends Mutation
 
     public function type(): Type
     {
-        return \GraphQL::type('PdfVerificationResult');
+        return GraphQL::type('PdfVerificationResult');
     }
 
     public function args(): array
@@ -34,35 +35,30 @@ class VerifyPdfHashMutation extends Mutation
     {
         $url = $args['pdfUrl'];
 
-        // Extraer la ruta relativa desde la URL
         $path = parse_url($url, PHP_URL_PATH);
         $relativePath = str_replace('/storage/', '', $path);
+        Log::info("📄 Verificando PDF en: $relativePath");
 
-        // Leer directamente desde el disco
         if (!Storage::disk('public')->exists($relativePath)) {
+            Log::error("❌ El archivo no existe: $relativePath");
             throw new \Exception("El archivo PDF no existe en el almacenamiento local.");
         }
 
         $pdfContent = Storage::disk('public')->get($relativePath);
         $pdfHash = hash('sha256', $pdfContent);
+        Log::info("🔑 Hash SHA256 generado: $pdfHash");
 
-        // Consultar logs en Polygonscan Amoy
-        $contractAddress = "0x260B76B3557A846cbF0313Bb525880427FfF5833";
-        $apiKey = env('POLYGONSCAN_API_KEY'); // opcional
-        $polygonUrl = "https://api-amoy.polygonscan.com/api";
+        // Ejecutar script de decodificación
+        $output = [];
+        $status = null;
 
-        $scanResponse = Http::get($polygonUrl, [
-            'module' => 'logs',
-            'action' => 'getLogs',
-            'fromBlock' => '0',
-            'toBlock' => 'latest',
-            'address' => $contractAddress,
-            'apikey' => $apiKey,
-        ]);
+        $scriptPath = base_path('scripts/decodeLog.cjs');
+        $command = "node " . escapeshellarg($scriptPath) . " " . escapeshellarg($pdfHash);
+        exec($command, $output, $status);
 
-        $logs = $scanResponse->json('result');
-        if (!is_array($logs)) {
-            \Log::error("Respuesta inválida de Polygonscan: " . json_encode($logs));
+
+        if ($status !== 0 || empty($output)) {
+            Log::error("❌ Error al ejecutar el script de verificación.");
             return [
                 'pdfHash' => $pdfHash,
                 'registradoEnBlockchain' => false,
@@ -70,26 +66,22 @@ class VerifyPdfHashMutation extends Mutation
             ];
         }
 
-        $hashFound = false;
-        $txHash = null;
-
-        $hexHash = '0x' . strtolower($pdfHash);
-
-        foreach ($logs as $log) {
-            $rawData = strtolower($log['data']);
-
-            if (str_contains($rawData, $hexHash)) {
-                $hashFound = true;
-                $txHash = $log['transactionHash'];
-                break;
-            }
+        $result = json_decode(implode("", $output), true);
+        if (!isset($result['found']) || !$result['found']) {
+            Log::warning("❌ Hash no encontrado en blockchain.");
+            return [
+                'pdfHash' => $pdfHash,
+                'registradoEnBlockchain' => false,
+                'transaccion' => null,
+            ];
         }
 
+        Log::info("✅ Hash verificado en blockchain. Tx: " . $result['transactionHash']);
 
         return [
             'pdfHash' => $pdfHash,
-            'registradoEnBlockchain' => $hashFound,
-            'transaccion' => $txHash,
+            'registradoEnBlockchain' => true,
+            'transaccion' => $result['transactionHash'],
         ];
     }
 }
